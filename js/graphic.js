@@ -89,14 +89,14 @@ function render(data){
 
 			if (t == ' '){
 				col.classList.add('level');
-				col.innerHTML = l;
+				col.innerHTML = `<strong>${l}</strong>`;
 			}
 			else{
 				col.classList.add(t.split(' ')[0].toLowerCase());
-				col.innerHTML = '<span class="glyphicon glyphicon-ok yes"></span>';
-				col.innerHTML += '<span class="star1">*</span><span class="star2">*</span>';
-				col.innerHTML += '  <span class="glyphicon glyphicon-remove no"></span>';
-				col.innerHTML += '<span class="star3">***</span>';
+				col.innerHTML = '';
+				col.innerHTML += '';
+				col.innerHTML += '';
+				col.innerHTML += '';
 				
 			}
 		})
@@ -118,9 +118,8 @@ function render(data){
 	key.innerHTML = '<span class="glyphicon glyphicon-ok" style="color:'+ colors['green']['004']+ '"></span> Training Offered<br /> ';
 	key.innerHTML += '<span class="glyphicon glyphicon-ok" style="color:'+ colors['yellow']['004']+ '"></span> Training Sometimes Offered<br /> ';
 	key.innerHTML += '<span class="glyphicon glyphicon-remove" style="color:'+ colors['red']['004']+ '"></span> Training Not Offered<br /> ';
-	key.innerHTML += '<span style="color:'+ colors['yellow']['004']+'">*</span> Training only offered if trans students enrolled at school.<br />';
-	key.innerHTML += '<span style="color:'+ colors['yellow']['004']+'">**</span> Training only offered to health teachers.<br />';
-	key.innerHTML += '<span style="color:'+ colors['black']['004']+'">***</span> Data unavailable.<br />';
+	key.innerHTML += '<span>*</span> Training only offered if trans student(s) enrolled at school<br />';
+	key.innerHTML += '<span>**</span> Training only offered to health teachers<br />';
 	right.append(key);
 
 	function populate (){
@@ -145,32 +144,39 @@ function render(data){
 			{'data':'STUDENT TRAIN - HIGH', 'val':'.high .students'}
 		];
 		
+		var keys2 = [
+			{'level':'elementary', 'data':'TEACHER TRAIN - ELEM'},
+			{'level':'high', 'data':'TEACHER TRAIN - HIGH'},
+			{'level':'middle', 'data':'TEACHER TRAIN- MIDDLE'}
+		];
+
+		_.forEach(keys2, k =>{
+			var row = document.querySelector('.'+k['level']);
+			//console.log(row);
+			if(datum[0][k['data']] == 'NA')
+				{
+					row.style.display = 'none';
+				}
+			else{
+				row.style.display = 'table-row';
+			}
+		})
+
 		var logoPathTo = './images/logos/';
 		var logoURL = datum[0]['relative'];
 		var logo_ = logoPathTo + logoURL;
 
 		function check(entry){
-			if (entry == 'Yes'){return [colors['green']['004'], colors['black']['004']]}
-			else if (entry == 'No'){return [colors['black']['004'], colors['green']['004']]}
-			else if (entry == 'NA'){return [colors['black']['004'], colors['black']['004']]}
-			
-			else {return [colors['yellow']['004'], colors['black']['004']]};
-
-		}
-		function stars(entry){
-			if (entry == 'Sometimes*'){return [1, 0, 0]}
-			else if (entry == 'Sometimes**'){return [1, 1, 0]}
-			else if (entry == 'NA'){return [0, 0, 1]}
-			else {return [0, 0, 0]};
+			if (entry == 'Yes'){return '<span class="glyphicon glyphicon-ok yes"></span>'}
+			else if (entry == 'No'){return '<span class="glyphicon glyphicon-remove no"></span>'}
+			else if (entry == 'NA'){return 'NA'}
+			else if (entry == 'Sometimes*'){return '<span class="glyphicon glyphicon-ok som"></span><span>*</span>'}
+			else if (entry == 'Sometimes**'){return '<span class="glyphicon glyphicon-ok som"></span><span>**</span>'}
+			else if (entry == 'NA'){return ''}
 		}
 
 		_.forEach(keys, k =>{
-			document.querySelector(k['val'] + ' .yes').style.color = check(datum[0][k['data']])[0];
-			document.querySelector(k['val'] + ' .no').style.color = check(datum[0][k['data']])[1];
-
-			document.querySelector(k['val'] + ' .star1').style.opacity = stars(datum[0][k['data']])[0];
-			document.querySelector(k['val'] + ' .star2').style.opacity = stars(datum[0][k['data']])[1];
-			document.querySelector(k['val'] + ' .star3').style.opacity = stars(datum[0][k['data']])[2];
+			document.querySelector(k['val']).innerHTML = check(datum[0][k['data']]);
 		})
 
 		logo.innerHTML = '';
